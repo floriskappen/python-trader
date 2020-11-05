@@ -1,0 +1,19 @@
+type: backtest
+
+# Which period to use for backtesting. Only relevant for type 'backtest'
+period:
+    start: 2019.20.10
+    end: 2020.20.10
+
+# Whether to use real or fake money. Only relevant for type 'live'
+# paper_trade: True
+
+# Which strategy to use
+strategy: trend_follower
+# The exchange to use, see API folder or README for supported exchanges
+exchange: binance
+# The currencies you would like to trade in. For a lot of strategies it would only be one, but for ARB it would be multiple
+currencies:
+    - BTC/USD
+# Amount of money you would like to start with
+starting_amount: 20

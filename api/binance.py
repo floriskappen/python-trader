@@ -3,14 +3,15 @@ import asyncio
 import websockets
 
 class Binance():
+    ID = 'binance'
     REST_ENDPOINT = 'https://api.binance.com'
     WS_ENDPOINT = 'wss://stream.binance.com:9443'
+    FEE = 0.2
 
     def __init__(self, key, secret):
         self.key = key
         self.secret = secret
         self.check_status()
-        asyncio.run(self.create_tasks())
 
     def check_status(self):
         wallet_up = self.check_wallet_status()
@@ -23,24 +24,14 @@ class Binance():
                 return True
         return False
 
-    async def create_tasks(self):
-        task1 = asyncio.create_task(self.websocket1())
-        task2 = asyncio.create_task(self.websocket2())
+    async def connect_to_ticker(self, url, on_message):
+        uri = self.WS_ENDPOINT + url
+        ws = await websockets.connect(uri)
 
-        await task1
-        await task2
-
-        await print('test')
-
-    async def websocket1(self):
-        uri = self.WS_ENDPOINT + '/ws/ethbtc@miniTicker@1000ms'
-        async with websockets.connect(uri) as websocket:
+        try:
             while True:
-                response = await websocket.recv()
-                print(response)
-    async def websocket2(self):
-        uri = self.WS_ENDPOINT + '/ws/bnbusdt@miniTicker@1000ms'
-        async with websockets.connect(uri) as websocket:
-            while True:
-                response = await websocket.recv()
-                print(response)
+                msg = await ws.recv()
+                on_message(msg, self.ID)
+        except websockets.WebSocketException as wse:
+            print(wse)
+            pass

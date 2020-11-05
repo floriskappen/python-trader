@@ -1,11 +1,11 @@
-type: live
+type: trade
 
 # Which period to use for backtesting. Only relevant for type 'backtest'
 # period:
 #     start: 2019.20.10
 #     end: 2020.20.10
 
-# Whether to use real or fake money. Only relevant for type 'live'
+# Whether to use real or fake money. Only relevant for type 'trade'
 paper_trade: True
 
 # Which strategy to use

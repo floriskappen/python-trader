@@ -28,4 +28,6 @@ class Trader():
             )
             await task
 
-        asyncio.run(s(self))
+        self.exchange.get_historical_data(self.symbol.upper())
+
+        # asyncio.run(s(self))

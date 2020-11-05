@@ -1,22 +1,23 @@
 TYPE = [
     'backtest',
-    'trade'
+    'live'
 ]
 
 GLOBAL_KEYS = [
     'type',
     'strategy',
     'exchange',
-    'currencies',
     'starting_amount'
 ]
 
 TYPE_KEYS = {
     'backtest': [
-        'period'
+        'period',
+        'symbol'
     ],
-    'trade': [
-        'paper_trade'
+    'live': [
+        'paper_trade',
+        'symbol'
     ]
 }
 

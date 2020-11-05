@@ -54,3 +54,8 @@ def validate_config(config):
     if not config['exchange'] in config_constants.EXCHANGE:
         print('ERROR: Configured exchange "{exchange}" is not supported'.format(exchange=config['exchange']))
         exit()
+
+    # Check config strategy
+    if not os.path.isfile('./strategy/{strategy}.py'.format(strategy=config['strategy'])):
+        print('ERROR: Configured strategy "{strategy}" not found.'.format(strategy=config['strategy']))
+        exit()

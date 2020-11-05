@@ -6,6 +6,7 @@ class Strategy():
         pass
 
     def on_message(self, message, exchange_id):
+        print(message)
         # Calculate whether to buy, sell or do nothing
         pass
 

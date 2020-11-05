@@ -1,11 +1,10 @@
 import requests
-import asyncio
 import websockets
 
 class Binance():
     ID = 'binance'
     REST_ENDPOINT = 'https://api.binance.com'
-    WS_ENDPOINT = 'wss://stream.binance.com:9443'
+    WS_ENDPOINT = 'wss://stream.binance.com:9443/ws/'
     FEE = 0.2
 
     def __init__(self, key, secret):
@@ -24,9 +23,11 @@ class Binance():
                 return True
         return False
 
-    async def connect_to_ticker(self, url, on_message):
-        uri = self.WS_ENDPOINT + url
+    async def connect_to_ticker(self, symbol, on_message):
+        uri = self.WS_ENDPOINT + symbol + '@miniTicker@1000ms'
         ws = await websockets.connect(uri)
+
+        print('START: Connected to ticket "{id}" for symbol "{symbol}"'.format(id=self.ID, symbol=symbol))
 
         try:
             while True:
@@ -35,3 +36,12 @@ class Binance():
         except websockets.WebSocketException as wse:
             print(wse)
             pass
+
+    def check_symbol_exists(self, symbol_to_check):
+        response = requests.get(self.REST_ENDPOINT + '/api/v3/exchangeInfo')
+        symbols = response.json()['symbols']
+        for symbol in symbols:
+            if symbol['symbol'].lower() == symbol_to_check:
+                return True
+
+        return False

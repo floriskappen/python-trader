@@ -1,6 +1,5 @@
-from api.binance import Binance
 import helpers
-import logging
+from trader import Trader
 
 def main():
     arguments = helpers.get_arguments()
@@ -8,8 +7,8 @@ def main():
     config = helpers.get_config(config_name=arguments['c'])
     secrets = helpers.get_secrets()
     helpers.validate_config(config)
-
-    binance = Binance(secrets['keys']['binance']['key'], secrets['keys']['binance']['secret'])
+    trader = Trader(config, secrets)
+    trader.start()
 
 if __name__ == "__main__":
    main()

@@ -1,4 +1,4 @@
-type: trade
+type: live
 
 # Which period to use for backtesting. Only relevant for type 'backtest'
 # period:
@@ -10,10 +10,16 @@ paper_trade: True
 
 # Which strategy to use
 strategy: trend_follower
+
 # The exchange to use, see API folder or README for supported exchanges
 exchange: binance
-# The currencies you would like to trade in.
-currencies:
-    - BTC/USD
+
+# The currency you would like to trade in
+symbol: BNBBTC
+
+# The currencies you would like to trade in. Not used right now
+# symbols: 
+#     - BNBBTC
+
 # Amount of money you would like to start with
 starting_amount: 20

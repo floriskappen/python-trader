@@ -7,7 +7,8 @@ GLOBAL_KEYS = [
     'type',
     'strategy',
     'exchange',
-    'starting_amount'
+    'starting_amount',
+    'interval'
 ]
 
 TYPE_KEYS = {

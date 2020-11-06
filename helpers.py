@@ -1,6 +1,7 @@
 import argparse
 import yaml
 import os
+import datetime
 
 def get_arguments():
     parser = argparse.ArgumentParser(description='Set a config file.')
@@ -59,3 +60,13 @@ def validate_config(config):
     if not os.path.isfile('./strategy/{strategy}.py'.format(strategy=config['strategy'])):
         print('ERROR: Configured strategy "{strategy}" not found.'.format(strategy=config['strategy']))
         exit()
+
+# Requires period from config file.
+def period_to_epoch(period):
+    start = datetime.datetime.strptime(period['start'], '%Y-%m-%d')
+    end = datetime.datetime.strptime(period['end'], '%Y-%m-%d')
+
+    return {
+        'start': int(start.timestamp() * 1000),
+        'end': int(end.timestamp() * 1000)
+    }

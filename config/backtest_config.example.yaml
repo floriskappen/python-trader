@@ -1,9 +1,9 @@
 type: backtest
 
-# Which period to use for backtesting. Only relevant for type 'backtest'
+# Which period to use for backtesting. Only relevant for type 'backtest'. Please use the format %Y-%m-%d
 period:
-    start: 2019.20.10
-    end: 2020.20.10
+    start: '2020-07-29'
+    end: '2020-08-29'
 
 # Whether to use real or fake money. Only relevant for type 'trade'
 # paper_trade: True
@@ -20,6 +20,9 @@ symbol: BNBBTC
 # The currencies you would like to trade in. Not used right now
 # symbols: 
 #     - BNBBTC
+
+# Interval of klines which will be used. Recommended 15m-1h for most strategies, but as low as possible for arbitrage.
+interval: 15m
 
 # Amount of money you would like to start with
 starting_amount: 20

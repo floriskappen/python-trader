@@ -1,16 +1,15 @@
 import requests
 import websockets
+import datetime
+import time
 
-class Binance():
+from api.exchange import Exchange
+
+class Binance(Exchange):
     ID = 'binance'
     REST_ENDPOINT = 'https://api.binance.com'
     WS_ENDPOINT = 'wss://stream.binance.com:9443/ws/'
-    FEE = 0.2
-
-    def __init__(self, key, secret):
-        self.key = key
-        self.secret = secret
-        self.check_status()
+    FEE = 0.1
 
     def check_status(self):
         wallet_up = self.check_wallet_status()
@@ -26,7 +25,6 @@ class Binance():
     
     def check_rest_status(self):
         response = requests.get(self.REST_ENDPOINT + '/api/v3/time')
-        print(response.json())
         if response.status_code == 200:
             return True
         return False
@@ -45,15 +43,43 @@ class Binance():
             print(wse)
             pass
 
-    def get_historical_data(self, symbol):
-        params = {
-            'symbol': symbol,
-            'interval': '1m',
-            'startTime': '1562543999999'
-        }
-        response = requests.get(self.REST_ENDPOINT + '/api/v3/klines', params=params)
-        json = response.json()
-        print(len(json))
+    def get_historical_data(self, symbol, interval, period):
+        start = period['start']
+        data = []
+        while start < period['end']:
+            params = {
+                'symbol': symbol,
+                'interval': interval,
+                'startTime': start
+            }
+            response = requests.get(self.REST_ENDPOINT + '/api/v3/klines', params=params)
+            parsed_response = response.json()
+            last_entry = parsed_response[-1]
+            data.extend(parsed_response)
+            start = last_entry[0] + 1
+
+        # Convert to dictionary
+        parsed_data = []
+        for element in data:
+            date = datetime.datetime.fromtimestamp(element[0] / 1000.0).strftime('%Y-%m-%d %H:%M:%S.%f')
+            parsed_data.append({
+                'open_time': element[0],
+                'close_time': element[5],
+                'open': element[1],
+                'close': element[4],
+                'high': element[2],
+                'low': element[3],
+                'number_of_trades': element[7],
+                'date': date
+            })
+
+        return parsed_data
+
+    def get_time_difference(self):
+        response = requests.get(self.REST_ENDPOINT + '/api/v3/time')
+        local_time = datetime.datetime.now().timestamp() * 1000
+        server_time = response.json()['serverTime']
+        return server_time - local_time
 
     def check_symbol_exists(self, symbol_to_check):
         response = requests.get(self.REST_ENDPOINT + '/api/v3/exchangeInfo')

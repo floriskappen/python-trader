@@ -4,6 +4,8 @@ from api.binance import Binance
 from strategy.strategy import Strategy
 import pandas
 import matplotlib.pyplot as plt
+import talib
+import numpy
 
 class Trader():
     EXCHANGES = {
@@ -47,7 +49,8 @@ class Trader():
         period = 20
 
         # Simple Moving Average
-        df['sma'] = df['close'].rolling(window=period).mean()
+        np_real_data = numpy.array(df['close'], dtype='float')
+        df['sma'] = talib.SMA(np_real_data)
         
         df['sma'].plot(figsize=(15, 6.4))
         plt.title('Test')

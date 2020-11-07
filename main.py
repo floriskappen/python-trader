@@ -12,6 +12,8 @@ def main():
     trader = Trader(config, secrets)
     if config['type'] == 'backtest':
         trader.backtest(config['period'])
+    if config['type'] == 'live':
+        trader.live_trade()
 
 if __name__ == "__main__":
    main()

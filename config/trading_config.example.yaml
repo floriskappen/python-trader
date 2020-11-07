@@ -9,7 +9,7 @@ type: live
 paper_trade: True
 
 # Which strategy to use
-strategy: trend_follower
+strategy: strategy
 
 # The exchange to use, see API folder or README for supported exchanges
 exchange: binance

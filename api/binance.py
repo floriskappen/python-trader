@@ -54,9 +54,12 @@ class Binance(Exchange):
             }
             response = requests.get(self.REST_ENDPOINT + '/api/v3/klines', params=params)
             parsed_response = response.json()
-            last_entry = parsed_response[-1]
-            data.extend(parsed_response)
-            start = last_entry[0] + 1
+            if len(parsed_response):
+                last_entry = parsed_response[-1]
+                data.extend(parsed_response)
+                start = last_entry[0] + 1
+            else:
+                break
 
         # Convert to dictionary
         parsed_data = []

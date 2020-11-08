@@ -4,6 +4,7 @@ class Strategy():
     HISTORY_DAYS = 30
 
     history = []
+    flag = 0
 
     def __init__(self, trader):
         self.trader = trader
@@ -14,12 +15,14 @@ class Strategy():
         pass
 
     def buy_signal(self):
-        # self.trader.buy()
-        pass
+        if self.flag != 1:
+            self.trader.buy(self.history[-1])
+            self.flag = 1
 
     def sell_signal(self):
-        # self.trader.sell()
-        pass
+        if self.flag != 0:
+            self.trader.sell(self.history[-1])
+            self.flag = 0
 
     def set_context_history(self, data):
-        self.history.append(data)
+        self.history.extend(data)

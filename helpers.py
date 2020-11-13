@@ -15,7 +15,7 @@ def get_arguments():
 
 def get_config(config_name):
     if not os.path.isfile('./config/{config}.yaml'.format(config=config_name)):
-        print("ERROR: Entered config file name does not exist. Don't inclode .yaml when inputting the name.")
+        print("ERROR: Entered config file name does not exist. Don't include .yaml when inputting the name.")
         exit()
     with open('./config/{config}.yaml'.format(config=config_name)) as f:
         data = yaml.load(f, Loader=yaml.FullLoader)

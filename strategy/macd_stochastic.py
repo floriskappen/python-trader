@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 from strategy.strategy import Strategy
 
-class Tester(Strategy):
+class MacdStochastic(Strategy):
     HISTORY_DAYS = 35
 
     def handle_new_data(self, data):
@@ -44,27 +44,8 @@ class Tester(Strategy):
             slowd_matype=stoch_slowd_matype
         )
 
-
-        if macd[-1] > macdsignal[-1] and slowk[-1] < slowd[-1] and slowk[-1] >= 20:
+        # TODO: Readd stoch
+        if macd[-1] > (macdsignal[-1] + 10):
             self.buy_signal()
-        elif macd[-1] < macdsignal[-1] and slowk[-1] > slowd[-1] and slowk[-1] <= 80:
+        elif macd[-1] < (macdsignal[-1] - 20):
             self.sell_signal()
-        # if slowk[-1] < 25:
-        #     self.buy_signal()
-        # elif slowk[-1] > 75:
-        #     self.sell_signal()
-        # if macd[-1] > macdsignal[-1] and slowk[-1] >= 20:
-        #     self.buy_signal()
-        # elif macd[-1] < macdsignal[-1] and slowk[-1] <= 80:
-        #     self.sell_signal()
-        # if macd[-1] > macdsignal[-1]:
-        #     self.buy_signal()
-        # elif macd[-1] < macdsignal[-1]:
-        #     self.sell_signal()
-
-        # plt.figure(figsize=(20, 4.5))
-        # # plt.plot(macd, label = 'MACD', color = 'red')
-        # # plt.plot(macdsignal, label = 'MACD Signal', color = 'blue')
-        # plt.plot(slowk, label = 'Slow K', color = 'blue')
-        # plt.plot(slowd, label = 'Slow D', color = 'red')
-        # plt.show()

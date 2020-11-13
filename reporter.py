@@ -71,4 +71,5 @@ class Reporter():
         print('Sell Trades: ' + str(len(self.sell_references)))
         plt.scatter(df.index, df['buy_signals'].values, color = 'green', label = 'Buy', marker = '^')
         plt.scatter(df.index, df['sell_signals'].values, color = 'red', label = 'Sell', marker = 'v')
+        
         plt.show()

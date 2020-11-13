@@ -2,6 +2,7 @@ import requests
 import websockets
 import datetime
 import time
+import json
 
 from api.exchange import Exchange
 
@@ -30,15 +31,49 @@ class Binance(Exchange):
         return False
 
     async def connect_to_ticker(self, symbol, on_message):
-        uri = self.WS_ENDPOINT + symbol + '@miniTicker@1000ms'
-        ws = await websockets.connect(uri)
+        uri = '{ws}{symbol}@miniTicker@1000ms'.format(
+            ws = self.WS_ENDPOINT,
+            symbol = symbol
+        )
+        self.ws = await websockets.connect(uri)
 
         print('START: Connected to ticket "{id}" for symbol "{symbol}"'.format(id=self.ID, symbol=symbol))
 
         try:
             while True:
                 msg = await ws.recv()
-                on_message(msg, self.ID)
+                # on_message(msg, self.ID)
+        except websockets.WebSocketException as wse:
+            print(wse)
+            pass
+
+    async def connect_to_kline(self, symbol, interval, on_message):
+        uri = '{ws}{symbol}@kline_{interval}'.format(
+            ws = self.WS_ENDPOINT,
+            symbol = symbol,
+            interval = interval
+        )
+        self.ws = await websockets.connect(uri)
+        print('START: Connected to Kline Stream "{id}" for symbol "{symbol}" and interval "{interval}"'.format(id=self.ID, symbol=symbol, interval=interval))
+
+        try:
+            while True:
+                msg = await self.ws.recv()
+                msg = json.loads(msg)
+                # Only do something if kline is closed
+                # if msg['k']['x'] == True:
+                date = datetime.datetime.fromtimestamp(msg['k']['t'] / 1000.0).strftime('%Y-%m-%d %H:%M:%S.%f')
+                parsed_msg = {
+                    'open_time': msg['k']['t'],
+                    'close_time': msg['k']['T'],
+                    'open': msg['k']['o'],
+                    'close': msg['k']['c'],
+                    'high': msg['k']['h'],
+                    'low': msg['k']['l'],
+                    'number_of_trades': msg['k']['n'],
+                    'date': date
+                }
+                on_message(parsed_msg)
         except websockets.WebSocketException as wse:
             print(wse)
             pass
@@ -50,7 +85,8 @@ class Binance(Exchange):
             params = {
                 'symbol': symbol,
                 'interval': interval,
-                'startTime': start
+                'startTime': start,
+                'endTime': period['end']
             }
             response = requests.get(self.REST_ENDPOINT + '/api/v3/klines', params=params)
             parsed_response = response.json()

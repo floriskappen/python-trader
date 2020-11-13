@@ -4,11 +4,16 @@ import matplotlib.pyplot as plt
 import talib
 import numpy
 import datetime
+import atexit
 
 from api.binance import Binance
 from reporter import Reporter
-from strategy.strategy import Strategy
-from strategy.tester import Tester
+
+# Strategies
+from strategy.playground import Playground
+from strategy.macd_stochastic import MacdStochastic
+from strategy.macd import Macd
+
 import helpers
 
 class Trader():
@@ -16,8 +21,9 @@ class Trader():
         'binance': Binance
     }
     STRATEGIES = {
-        'strategy': Strategy,
-        'tester': Tester
+        'playground': Playground,
+        'macd_stochastic': MacdStochastic,
+        'macd': Macd,
     }
 
     def __init__(self, config, secrets):
@@ -30,19 +36,18 @@ class Trader():
         self.interval = config['interval']
         self.reporter = Reporter(config['starting_amount'], self.exchange.FEE)
 
+        self.type = config['type']
+        if self.type == 'live':
+            self.paper_trade = config['paper_trade']
+
         if not self.exchange.check_symbol_exists(self.symbol):
             raise SystemExit('ERROR: Symbol "{symbol}" not found on exchange "{id}"'.format(symbol=self.symbol, id=self.exchange.ID))
 
     # def start(self):
-    #     async def s(self):
-    #         task = asyncio.create_task(
-    #             self.exchange.connect_to_ticker(self.symbol, self.strategy.on_message)
-    #         )
-    #         await task
 
-    #     asyncio.run(s(self))
 
     def live_trade(self):
+        # TODO: Check if user has enough funds in account if not paper trading
         # Get history so strategy has enough context
         history_days = self.strategy.HISTORY_DAYS
         now = datetime.datetime.now()
@@ -57,7 +62,17 @@ class Trader():
             interval=self.interval,
             period=period
         )
-        print(context_historical_data)
+        self.strategy.set_context_history(context_historical_data)
+
+        async def start(self):
+            task = asyncio.create_task(
+                self.exchange.connect_to_kline(self.symbol, self.interval, self.strategy.handle_new_data)
+            )
+            await task
+
+        atexit.register(self.reporter.create_report, self.strategy.history)
+
+        asyncio.run(start(self))
 
 
     def backtest(self, period):
@@ -95,7 +110,22 @@ class Trader():
         self.reporter.create_report(self.strategy.history)
 
     def buy(self, reference):
-        self.reporter.register_buy_reference(reference)
+        if self.type == 'backtest':
+            self.reporter.register_buy_reference(reference)
+        elif self.type == 'live':
+            if self.paper_trade == True:
+                self.reporter.register_buy_reference(reference)
+            elif self.paper_trade == False:
+                # TODO: Send buy request to exchance. If succesfull, continue
+                self.reporter.register_buy_reference(reference)
 
     def sell(self, reference):
-        self.reporter.register_sell_reference(reference)
+        if self.type == 'backtest':
+            self.reporter.register_sell_reference(reference)
+        elif self.type == 'live':
+            if self.paper_trade == True:
+                self.reporter.register_sell_reference(reference)
+            elif self.paper_trade == False:
+                # TODO: Send buy request to exchance. If succesfull, continue
+                self.reporter.register_sell_reference(reference)
+

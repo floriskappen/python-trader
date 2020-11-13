@@ -1,12 +1,17 @@
+import pandas
 from strategy.strategy import Strategy
 
 class Playground(Strategy):
-    HISTORY_DAYS = 10
+    HISTORY_DAYS = 1
 
     def handle_new_data(self, data):
         previous = self.history[-1]
+        previousClose = float(previous['close'])
         self.history.append(data)
-        if data['open'] > previous['open']:
+        close = float(data['close'])
+
+        print(close - previousClose)
+        if close > previousClose:
             self.sell_signal()
         else:
             self.buy_signal()

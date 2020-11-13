@@ -53,7 +53,10 @@ class Binance(Exchange):
             symbol = symbol,
             interval = interval
         )
-        self.ws = await websockets.connect(uri)
+        try:
+            self.ws = await websockets.connect(uri)
+        except:
+            pass
         print('START: Connected to Kline Stream "{id}" for symbol "{symbol}" and interval "{interval}"'.format(id=self.ID, symbol=symbol, interval=interval))
 
         try:
@@ -61,21 +64,20 @@ class Binance(Exchange):
                 msg = await self.ws.recv()
                 msg = json.loads(msg)
                 # Only do something if kline is closed
-                # if msg['k']['x'] == True:
-                date = datetime.datetime.fromtimestamp(msg['k']['t'] / 1000.0).strftime('%Y-%m-%d %H:%M:%S.%f')
-                parsed_msg = {
-                    'open_time': msg['k']['t'],
-                    'close_time': msg['k']['T'],
-                    'open': msg['k']['o'],
-                    'close': msg['k']['c'],
-                    'high': msg['k']['h'],
-                    'low': msg['k']['l'],
-                    'number_of_trades': msg['k']['n'],
-                    'date': date
-                }
-                on_message(parsed_msg)
+                if msg['k']['x'] == True:
+                    date = datetime.datetime.fromtimestamp(msg['k']['t'] / 1000.0).strftime('%Y-%m-%d %H:%M:%S.%f')
+                    parsed_msg = {
+                        'open_time': msg['k']['t'],
+                        'close_time': msg['k']['T'],
+                        'open': msg['k']['o'],
+                        'close': msg['k']['c'],
+                        'high': msg['k']['h'],
+                        'low': msg['k']['l'],
+                        'number_of_trades': msg['k']['n'],
+                        'date': date
+                    }
+                    on_message(parsed_msg)
         except websockets.WebSocketException as wse:
-            print(wse)
             pass
 
     def get_historical_data(self, symbol, interval, period):

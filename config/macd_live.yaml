@@ -22,7 +22,7 @@ symbol: BTCUSDT
 #     - BNBBTC
 
 # Interval of klines which will be used. Recommended 15m-1h for most strategies, but as low as possible for arbitrage.
-interval: 1h
+interval: 1m
 
 # Amount of money you would like to start with
 starting_amount: 50

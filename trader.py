@@ -72,7 +72,10 @@ class Trader():
 
         atexit.register(self.reporter.create_report, self.strategy.history)
 
-        asyncio.run(start(self))
+        try:
+            asyncio.run(start(self))
+        except:
+            pass
 
 
     def backtest(self, period):
@@ -113,19 +116,27 @@ class Trader():
         if self.type == 'backtest':
             self.reporter.register_buy_reference(reference)
         elif self.type == 'live':
+            print('Buying')
             if self.paper_trade == True:
                 self.reporter.register_buy_reference(reference)
             elif self.paper_trade == False:
                 # TODO: Send buy request to exchance. If succesfull, continue
                 self.reporter.register_buy_reference(reference)
 
+        # Let strategy know we were successful (relevant for live & non paper trading)
+        return True
+
     def sell(self, reference):
         if self.type == 'backtest':
             self.reporter.register_sell_reference(reference)
         elif self.type == 'live':
+            print('Selling')
             if self.paper_trade == True:
                 self.reporter.register_sell_reference(reference)
             elif self.paper_trade == False:
                 # TODO: Send buy request to exchance. If succesfull, continue
                 self.reporter.register_sell_reference(reference)
+
+        # Let strategy know we were successful (relevant for live & non paper trading)
+        return True
 

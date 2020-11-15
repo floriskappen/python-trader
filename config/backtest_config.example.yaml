@@ -8,8 +8,9 @@ period:
 # Whether to use real or fake money. Only relevant for type 'trade'
 # paper_trade: True
 
-# Which strategy to use
-strategy: strategy
+# Which strategies to use
+strategies:
+    - strategy
 
 # The exchange to use, see API folder or README for supported exchanges
 exchange: binance

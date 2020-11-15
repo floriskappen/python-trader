@@ -45,6 +45,8 @@ class Macd(Strategy):
         )
 
         if macd[-1] > (macdsignal[-1] + 10):
-            self.buy_signal()
+            return 1
         elif macd[-1] < (macdsignal[-1] - 20):
-            self.sell_signal()
+            return -1
+
+        return 0

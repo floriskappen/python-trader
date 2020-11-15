@@ -12,6 +12,8 @@ class Playground(Strategy):
 
         print(close - previousClose)
         if close > previousClose:
-            self.sell_signal()
+            return -1
         else:
-            self.buy_signal()
+            return 1
+
+        return 0

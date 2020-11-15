@@ -2,15 +2,16 @@ type: backtest
 
 # Which period to use for backtesting. Only relevant for type 'backtest'. Please use the format %Y-%m-%d
 period:
-    start: '2020-08-29'
-    end: '2020-09-29'
+    start: '2020-03-29'
+    end: '2020-04-29'
 
 # Whether to use real or fake money. Only relevant for type 'trade'
 # paper_trade: True
 
 # Which strategies to use
 strategies:
-    - macd
+  - ichimoku_cloud
+  # - bollinger_bands
 
 # The exchange to use, see API folder or README for supported exchanges
 exchange: binance

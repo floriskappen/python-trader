@@ -57,9 +57,10 @@ def validate_config(config):
         exit()
 
     # Check config strategy
-    if not os.path.isfile('./strategy/{strategy}.py'.format(strategy=config['strategy'])):
-        print('ERROR: Configured strategy "{strategy}" not found.'.format(strategy=config['strategy']))
-        exit()
+    for strategy in config['strategies']:
+        if not os.path.isfile('./strategy/{strategy}.py'.format(strategy=strategy)):
+            print('ERROR: Configured strategy "{strategy}" not found.'.format(strategy=config['strategy']))
+            exit()
 
 # Requires period from config file.
 def period_to_epoch(period):

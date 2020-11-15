@@ -60,28 +60,29 @@ class Trader():
     def live_trade(self):
         # TODO: Check if user has enough funds in account if not paper trading
         # Get history so strategy has enough context
-        history_days = self.strategy.HISTORY_DAYS
-        now = datetime.datetime.now()
-        delta = datetime.timedelta(days=history_days)
-        history_days_ago = now - delta
-        period = {
-            'start': int(history_days_ago.timestamp() * 1000),
-            'end': int(now.timestamp() * 1000)
-        }
-        context_historical_data = self.exchange.get_historical_data(
-            symbol=self.symbol.upper(),
-            interval=self.interval,
-            period=period
-        )
-        self.strategy.set_context_history(context_historical_data)
+        for strategy in self.strategies:
+            history_days = strategy.HISTORY_DAYS
+            now = datetime.datetime.now()
+            delta = datetime.timedelta(days=history_days)
+            history_days_ago = now - delta
+            period = {
+                'start': int(history_days_ago.timestamp() * 1000),
+                'end': int(now.timestamp() * 1000)
+            }
+            context_historical_data = self.exchange.get_historical_data(
+                symbol=self.symbol.upper(),
+                interval=self.interval,
+                period=period
+            )
+            strategy.set_context_history(context_historical_data)
 
         async def start(self):
             task = asyncio.create_task(
-                self.exchange.connect_to_kline(self.symbol, self.interval, self.strategy.handle_new_data)
+                self.exchange.connect_to_kline(self.symbol, self.interval, self.handle_strategies)
             )
             await task
 
-        atexit.register(self.reporter.create_report, self.strategy.history)
+        atexit.register(self.reporter.create_report, self.history)
 
         try:
             asyncio.run(start(self))
